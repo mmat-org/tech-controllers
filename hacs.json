@@ -2,7 +2,6 @@
     "name": "Tech Controllers",
     "country": "PL",
     "render_readme": true,
-    "zip_release": true,
-    "filename": "tech.zip",
-    "homeassistant": "2024.10.3"
+    "zip_release": false,
+    "homeassistant": "2025.1.0"
 }
