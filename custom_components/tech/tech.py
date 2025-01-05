@@ -214,7 +214,7 @@ class Tech:
         _LOGGER.debug("Updating module zones ... %s", module_udid)
         result = await self.get_module_data(module_udid)
         zones = result["zones"]["elements"]
-        zones = list(filter(lambda e: e is not None and "zone" in e and e["zone"] is not None and "visibility" in e["zone"], zones))
+        zones = list(filter(lambda e: e is not None and "zone" in e and e["zone"] is not None and e['zone']['visibility'], zones))
 
         for zone in zones:
             self.modules[module_udid]["zones"][zone["zone"]["id"]] = zone
