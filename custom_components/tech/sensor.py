@@ -158,6 +158,7 @@ async def async_setup_entry(
     signal_strength_sensors = map_to_signal_strength_sensors(
         zones, coordinator, config_entry
     )
+    underfloor_temperature_sensors = map_to_underfloor_temperature_sensors(zones, coordinator, config_entry)
     # tile_sensors = map_to_tile_sensors(tiles, api, config_entry)
 
     async_add_entities(
@@ -469,6 +470,34 @@ def is_signal_strength_operating_device(device) -> bool:
     """
     return device[CONF_ZONE][SIGNAL_STRENGTH] is not None
 
+def map_to_underfloor_temperature_sensors(zones, coordinator, config_entry):
+    """Map zones to underfloor temperature sensors.
+
+    Args:
+    zones: list of zones
+    coordinator: API to interact with humidity sensors
+    config_entry: configuration entry for the sensors
+    model: device model
+
+    Returns:
+    list of ZoneUnderfloorTemperatureSensor instances
+
+    """
+    # Filter devices that are underfloor temperature operating devices
+    devices = filter(
+        lambda deviceIndex: is_underfloor_temperature_operating_device(zones[deviceIndex]), zones
+    )
+    # Map devices to TechHumiditySensor instances
+    return (
+        ZoneUnderfloorTemperatureSensor(zones[deviceIndex], coordinator, config_entry)
+        for deviceIndex in devices
+    )
+
+
+def is_underfloor_temperature_operating_device(device) -> bool:
+    return (
+        device[CONF_ZONE]["underfloor"]
+    )
 
 class TechBatterySensor(CoordinatorEntity, SensorEntity):
     """Representation of a Tech battery sensor."""
@@ -634,7 +663,6 @@ class TechTemperatureSensor(CoordinatorEntity, SensorEntity):
             CONF_MODEL: self._model,  # Model of the device
             ATTR_MANUFACTURER: self._manufacturer,  # Manufacturer of the device
         }
-
 
 class TechOutsideTempTile(CoordinatorEntity, SensorEntity):
     """Representation of a Tech outside temperature tile sensor."""
@@ -939,6 +967,41 @@ class ZoneTemperatureSensor(ZoneSensor):
         else:
             self._attr_native_value = None
 
+class ZoneUnderfloorTemperatureSensor(ZoneSensor):
+    """Representation of a Zone Underfloor Temperature Sensor."""
+
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique ID."""
+        return f"{self._unique_id}_underfloor_temperature"
+
+    @property
+    def translation_key(self):
+        """Return the translation key to translate the entity's name and states."""
+        return "underfloor_temperature_entity"
+
+    def update_properties(self, device):
+        """Update the properties of the UnderfloorTemperatureSensor object.
+
+        Args:
+        device: dict, the device data containing information about the device
+
+        Returns:
+        None
+
+        """
+        # Set the name of the device
+        self._name = device[CONF_DESCRIPTION][CONF_NAME]
+
+        # Check if the underfloor temperature is available, and update the native value accordingly
+        if device[CONF_ZONE]["underfloor"]:
+            self._attr_native_value = device[CONF_ZONE]["underfloor"]["temperature"] / 10
+        else:
+            self._attr_native_value = None
 
 class ZoneBatterySensor(ZoneSensor):
     """Representation of a Zone Temperature Sensor."""

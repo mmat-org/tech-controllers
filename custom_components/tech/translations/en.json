@@ -33,6 +33,9 @@
           "temperature_entity": {
             "name": "{entity_name} Temperature"
           },
+          "underfloor_temperature_entity": {
+            "name": "{entity_name} Underfloor Temperature"
+          },
           "battery_entity": {
             "name": "{entity_name} Battery"
           },
