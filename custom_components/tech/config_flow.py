@@ -102,7 +102,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Finish setting up controllers."""
 
-        include_name: bool = INCLUDE_HUB_IN_NAME in user_input
+        include_name: bool = user_input[INCLUDE_HUB_IN_NAME]
 
         if self._controllers is not None and user_input is not None:
             if (
