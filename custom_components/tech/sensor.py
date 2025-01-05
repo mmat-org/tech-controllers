@@ -170,6 +170,7 @@ async def async_setup_entry(
             actuator_sensors,
             window_sensors,
             signal_strength_sensors,
+            underfloor_temperature_sensors,
         ),
         True,
     )
