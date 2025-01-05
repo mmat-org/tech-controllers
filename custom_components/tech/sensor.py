@@ -497,7 +497,7 @@ def map_to_underfloor_temperature_sensors(zones, coordinator, config_entry):
 
 def is_underfloor_temperature_operating_device(device) -> bool:
     return (
-        device[CONF_ZONE]["underfloor"]
+        "underfloor" in device
     )
 
 class TechBatterySensor(CoordinatorEntity, SensorEntity):
@@ -999,8 +999,8 @@ class ZoneUnderfloorTemperatureSensor(ZoneSensor):
         self._name = device[CONF_DESCRIPTION][CONF_NAME]
 
         # Check if the underfloor temperature is available, and update the native value accordingly
-        if device[CONF_ZONE]["underfloor"]:
-            self._attr_native_value = device[CONF_ZONE]["underfloor"]["temperature"] / 10
+        if "underfloor" in device:
+            self._attr_native_value = device["underfloor"]["temperature"] / 10
         else:
             self._attr_native_value = None
 
